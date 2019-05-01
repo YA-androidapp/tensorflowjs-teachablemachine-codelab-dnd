@@ -1,4 +1,5 @@
-﻿const canvasPrefix = 'canvas-'
+﻿// Copyright (c) 2019 YA-androidapp(https://github.com/YA-androidapp) All rights reserved.
+const canvasPrefix = 'canvas-'
 const classifier = knnClassifier.create();
 const classPrefix = 'class-'
 const img_height = 224;
