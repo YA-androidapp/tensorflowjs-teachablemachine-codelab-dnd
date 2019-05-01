@@ -1,0 +1,37 @@
+﻿<html>
+
+<head>
+  <!-- Load the latest version of TensorFlow.js -->
+  <!--
+    <script src="https://unpkg.com/@tensorflow/tfjs"></script>
+    <script src="https://unpkg.com/@tensorflow-models/mobilenet"></script>
+    <script src="https://unpkg.com/@tensorflow-models/knn-classifier"></script>
+    -->
+  <script src="src/tf.min.js"></script>
+  <script src="src/mobilenet.min.js"></script>
+  <script src="src/knn-classifier.min.js"></script>
+</head>
+
+<body>
+  <div>
+    <input type="text" id="class-name" placeholder="Class Name" pattern="^[a-zA-Z0-9]+$" value="" />
+    <button id="add-class-button">Add a Class</button>
+  </div>
+  <div id="buttons">
+  </div>
+
+  <div>
+
+    <!-- Add an image that we will use to test -->
+    <video autoplay playsinline muted id="webcam" width="224" height="224"></video>
+
+    <div id="message"></div>
+    <div id="console"></div>
+
+  </div>
+
+  <!-- Load index.js after the content of the page -->
+  <script src="index.js"></script>
+</body>
+
+</html>
