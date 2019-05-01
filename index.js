@@ -77,11 +77,13 @@ async function app() {
   document.getElementById('add-class-button').addEventListener('click', () => {
     let classLabel = document.getElementById('class-name').value;
     document.getElementById('buttons').innerHTML += ' <button id="' + classPrefix + classLabel + '" onclick="addExampleVideo(\'' + classLabel + '\')">Add ' + classLabel + '</button>';
-    document.getElementById('canvases').innerHTML += ' <div style="border:#000 1px solid;float:left;width:256px;height:256px;"><canvas id="' + canvasPrefix + classLabel + '" style="height:' + img_height + 'px;width:' + img_width + 'px;" title="' + classLabel + '"></canvas></div>';
+    document.getElementById('canvases').innerHTML += ' <div style="border:#000 1px solid;float:left;width:256px;height:256px;"><canvas id="' +
+      canvasPrefix + classLabel + '" style="height:' + img_height + 'px;width:' + img_width + 'px;" title="' + classLabel +
+      '" ondrop="dropCanvasTrain(\'' + classLabel  + '\')"></canvas></div>';
     classLabels.push(classLabel);
-    initCanvasTrain(classLabel);
 
     document.getElementById('class-name').value = '';
+    document.getElementById("class-name").focus();
   });
 
   while (true) {
@@ -102,28 +104,42 @@ async function app() {
   }
 }
 
-function initCanvasTrain(_classLabel) {
-  var canvasId = canvasPrefix + _classLabel
-  var canvas = document.getElementById(canvasId);
-  var ctx = canvas.getContext('2d');
-  var render = function(image) {
+function initCanvasTest() {
+  console.log('initCanvasTest()')
+  let canvasId = canvasPrefix + 'test'
+  let canvas = document.getElementById(canvasId);
+  let ctx = canvas.getContext('2d');
+  let render = async function(image) {
+    ctx.clearRect(0, 0, img_width, img_height);
     canvas.height = img_height;
     canvas.width = img_width;
     ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, img_width, img_height);
     console.log(image)
 
-    addExampleImage(_classLabel)
+    if (classifier.getNumClasses() > 0) {
+      // Get the activation from mobilenet from the webcam.
+      const activation = net.infer(canvas, 'conv_preds');
+      // Get the most likely class and confidences from the classifier module.
+      const result = await classifier.predictClass(activation);
+
+      console.log(result);
+      document.getElementById('consoleTest').innerText = `
+        prediction: ${result.label}\t
+        probability: ${result.confidences[result.label]}
+      `;
+    }
   };
   canvas.addEventListener("drop", function(e) {
     e.preventDefault();
+    console.log('initCanvasTest() drop')
 
-    var file = e.dataTransfer.files[0];
-    var image = new Image();
+    let file = e.dataTransfer.files[0];
+    let image = new Image();
     image.onload = function() {
       render(this);
     };
 
-    var reader = new FileReader();
+    let reader = new FileReader();
     reader.onload = function(e) {
       image.src = e.target.result;
     };
@@ -131,8 +147,34 @@ function initCanvasTrain(_classLabel) {
   }, false);
 }
 
+function dropCanvasTrain(_classLabel) {
+  console.log('initCanvasTrain(' + _classLabel + ') drop')
+  let canvasId = canvasPrefix + _classLabel
+  let canvas = document.getElementById(canvasId);
+  let ctx = canvas.getContext('2d');
+
+  let file = event.dataTransfer.files[0];
+  let image = new Image();
+  image.onload = function() {
+    image = this
+    ctx.clearRect(0, 0, img_width, img_height);
+    canvas.height = img_height;
+    canvas.width = img_width;
+    ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, img_width, img_height);
+    console.log(image.outerHTML)
+
+    addExampleImage(_classLabel)
+  };
+
+  let reader = new FileReader();
+  reader.onload = function(e) {
+    image.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
 window.onload = function() {
-  var cancelEvent = function(e) {
+  let cancelEvent = function(e) {
     e.preventDefault();
     e.stopPropagation();
     return false;
@@ -141,6 +183,8 @@ window.onload = function() {
   document.addEventListener("drop", cancelEvent, false);
   document.addEventListener("dragover", cancelEvent, false);
   document.addEventListener("dragenter", cancelEvent, false);
+
+  initCanvasTest();
 
   app();
 };

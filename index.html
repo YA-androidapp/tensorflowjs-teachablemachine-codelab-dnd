@@ -22,13 +22,21 @@
   <div id="canvases">
   </div>
 
-  <div style="clear:both;">
+  <div style="clear:both;"></div>
 
+  <div>
     <!-- Add an image that we will use to test -->
-    <video autoplay playsinline muted id="webcam" width="224" height="224"></video>
+    <div>
+      <video autoplay playsinline muted id="webcam" width="224" height="224"></video>
+    </div>
+    <div style="border:#000 1px solid;width:256px;height:256px;">
+      <canvas id="canvas-test" style="height:224px;width:224px;" title="Test image">
+      </canvas>
+    </div>
 
-    <div id="message"></div>
+    <div id="message" style="clear:both;"></div>
     <div id="console"></div>
+    <div id="consoleTest"></div>
 
   </div>
 
