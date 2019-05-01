@@ -14,13 +14,15 @@
 
 <body>
   <div>
-    <input type="text" id="class-name" placeholder="Class Name" pattern="^[a-zA-Z0-9]+$" value="" />
+    <input type="text" id="class-name" placeholder="Class Name" pattern="^[a-zA-Z0-9]+$" style="ime-mode: disabled;" value="" />
     <button id="add-class-button">Add a Class</button>
   </div>
   <div id="buttons">
   </div>
+  <div id="canvases">
+  </div>
 
-  <div>
+  <div style="clear:both;">
 
     <!-- Add an image that we will use to test -->
     <video autoplay playsinline muted id="webcam" width="224" height="224"></video>
